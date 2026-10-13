@@ -1,0 +1,24 @@
+Phần 1: Phân tích & Thẩm định mã AI nguy hiểm
+Điểm nguy hiểm: Lệnh Remove-Item -Path "C:\*" -Recurse -Force nhắm thẳng vào gốc ổ C, có nguy cơ xóa sạch toàn bộ hệ điều hành.
+
+Ý nghĩa tham số: -Path "C:\*" (chọn toàn bộ gốc ổ C), -Recurse (duyệt đệ quy sâu vào mọi thư mục con), -Force (ép xóa cả tệp ẩn/hệ thống, bỏ qua xác nhận).
+
+3 Nguyên tắc vàng: (1) Không bao giờ chạy lệnh lạ trên thư mục gốc; (2) Kiểm tra kỹ đường dẫn -Path; (3) Tuyệt đối cẩn trọng với các cờ xóa mạnh (-Recurse, -Force).
+
+Phần 2: Triển khai kịch bản an toàn (safe_cleanup.ps1)
+PowerShell
+# 1. Chuyển đến thư mục dự án an toàn
+Set-Location "C:\SmartOrchidFarm\Logs"
+
+# 2. Lọc cảnh báo WARNING sang tệp issues.txt
+Get-Content "system.log" | Select-String "WARNING" > "issues.txt"
+
+# 3. Chỉ xóa tệp .tmp trong phạm vi thư mục hiện tại
+Remove-Item -Path ".\*.tmp" -Force
+Write-Host "Don dep an toan thanh cong!" -ForegroundColor Green
+Phần 3: Kiểm thử xác nhận
+Kiểm tra tệp báo cáo: Test-Path "issues.txt" (Trả về True nếu đã tạo thành công).
+
+Xem nội dung lọc: Get-Content "issues.txt"
+
+Xác nhận tệp tạm đã xóa: Get-ChildItem
